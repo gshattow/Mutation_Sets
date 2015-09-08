@@ -194,7 +194,30 @@ The github repository is downloaded as
 	  
 After running the scripts, the directory structure looks like this:
 
-								Mutation Sets/
+Mutation_Sets/
+	code/
+		scripts described above
+	popluations/
+		1kg_*.txt
+	data/
+		dataset/ (e.g. 20130502)
+			chrCp/
+				(temporary files from individuals.bash)
+			chrCn/
+				chrC.HG* (created by individuals.bash)
+				chrC.NA* (created by individuals.bash)
+		Fdataset/ (e.g. F20130502)
+			sifted.SIFT.chrC.txt (output from sifting.bash)
+	output/
+		individual_pairs_*.txt (output from mutation_sets.py)
+		gene_pairs_*.txt  (output from mutation_sets.py)
+	plots/
+		pair_distribution_*.png  (output from mutation_sets.py)
+
+
+
+Or This:
+								Mutation_Sets/
 										|
 ________________________________________|________________________________________
 |         			  |					|					 |					 |
@@ -218,4 +241,5 @@ above														 |
 						individuals.bash)		(output from individuals.bash)
 						
 (best viewed with a screen > 95 characters wide)
+
 
