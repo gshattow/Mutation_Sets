@@ -20,9 +20,10 @@
 #			and size of the chromosome
 #
 # step 4 - take the line numbers with mutations from the chrA.p files and rename them
-#			into chrA.HGID in the chrAn directory
+#			into chrA.HGID in the chrAn directory. rm the chrA.p files that you don't 
+# 			need anymore (they are really big)
 # 
-# step 5 - rm all of the chrA.p files that you don't need anymore (they are really big)
+# step 5 - rm the unzipped (really large) file
 
 while getopts 'c:v' flag; do
   case "${flag}" in

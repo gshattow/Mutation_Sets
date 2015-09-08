@@ -59,4 +59,6 @@ do
 done
 
 plotsdir='../plots'
+outputdir='../output'
 mkdir $plotsdir
+mkdir $outputdir

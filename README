@@ -1,0 +1,198 @@
+Welcome to the Mutation Sets Code!
+(c) 2015 Genevieve Shattow
+
+Last updated: 7 September 2015
+
+There are several pieces to this repository, so please read the README
+before science-ing.
+
+NB: This code has been tested in a bash environment on a Linux server. I cannot
+speak to its reliability on another system yet.
+
+NB: The dataset used for development is 20130502 and has been hardcoded into the
+code. If you want to use a different set, I hope it has the same format and 
+directory structure on the server.
+
+The purpose of this code is to fetch, parse, and analyze data from the 1000 
+genomes project. Because the files are stored on the 1000genomes server, it 
+does not make sense to store them locally as well (unless you have limited 
+internet access). So this code fetches and unzips the files, extracts the 
+necessary information, and gets rid of the local copy. It then cross-matches
+the extracted data (which person has which mutations), with the mutation's 
+sift score (how bad it is). Then it performs a few analyses, including 
+plotting. A more detailed description and a how-to is below.
+
+
+_________________________
+Code in the repository:
+---
+README (this document, right here)
+individuals.bash
+sifting.bash
+mutation_sets.py
+run_individuals.sh
+run_mutation_sets.sh
+
+Extra data in repository:
+---
+populations/1kg_POP.txt
+for POP = ALL, AFR, AMR, EAS, EUR, SAS
+for definitions of each population, see: 
+http://www.1000genomes.org/category/frequently-asked-questions/population
+
+each txt file has a list of individual names/codes that are in that
+population, with ALL including all of them.
+
+
+_________________________
+individuals.bash
+---
+To use:
+./individuals.bash -c N (each chromosome individually)
+
+or
+
+./run_individuals.sh (all chromosomes in sequence)
+---
+individuals.bash fetches and parses the phase 3 data from the 1000 genomes by 
+chromosome. These files list all of the variants in that chromosome and which
+individuals have each one. Each individual is tested twice. If both tests have 
+values greater than 0, then the individual is said to have that variant. The 
+indices of these variants are then copied into files for each individual. This 
+has to be done for each chromosome, which can individually take a few hours to 
+half a day (as run on an 8GB core). To run them all in succession, use 
+run_individuals.sh. It takes no arguments and runs chromosomes 1-22.
+
+For more specific information, this is at the top of the file:
+
+# To use:
+# ./individuals.bash -c N
+# 
+# To separate out the mutation lists for each individual:
+# step 0 - download each chromosome file and move the long names to a shorter name
+#			e.g. ALL.chr1.phase3.......vcf.gz becomes ALL.chr1.individuals.vcf.gz
+#
+# step 1 - gunzip files
+#
+# step 2 - make new directories
+#
+# step 3 - run the oneliner grep -ve.... in 100 person batches, making sure the
+#			chromosome number and file name are set.
+#			This creates files of line numbers where individuals have mutations
+#			on both alleles, corresponding to an rs number.
+# 			nb - I've tried doing it in 1 go, it was going to take a millennium
+#			nb2 - it should take .5-2 hours to run each 100, depending on the machine
+#			and size of the chromosome
+#
+# step 4 - take the line numbers with mutations from the chrA.p files and rename them
+#			into chrA.HGID in the chrAn directory. rm the chrA.p files that you don't 
+# 			need anymore (they are really big)
+# 
+# step 5 - rm the unzipped (really large) file
+
+
+_________________________
+sifting.bash
+---
+To use:
+
+./sifting.bash
+---
+sifting.bash finds the sift scores of all of the variants, as calculated by the
+Variant Effect Predictor (more information: www.ensembl.org/info/docs/tools/vep/).
+The VEP has been run on the 1000 genomes data, but these files do not have the 
+results linked to the individual patients. sifting.bash fetches the release data
+for each chromosome. Not every variant has a sift score, so this script pulls out
+the variants that do. It copies the variant ids (the index for this code set, rs
+number, and within ENSEMBL), the sift score, and the phenotype.
+
+From the top of the file:
+
+# This script runs on the output of the VEP which includes the sift scores.
+# For each chromosome, it moves and unzips the files.
+# Then taking only the lines with sift scores, it records the line number 
+# (minus the header) it came from.
+# It looks up the ENSEMBL and HGNC gene cataplgues corresponding to each rs number
+# using symbol_lookup.py. (optional)
+# Then it combines all the columns into 
+# line number, rs number, ENSEMBL ID, (HGNC ID), sift score, and phenotype score.
+
+
+_________________________
+mutation_sets.py
+---
+To use:
+python mutation_sets.py -c C -pop POP
+
+or
+
+run_mutation_sets.sh
+---
+This script is the analysis/plotting part of this package. There are two 
+sections after the individual files and variant sift scores are read in. 
+The data is cut by sift scores less than a certain values, which is 0.05 as 
+a default, but can be reset within the code.
+
+The first section measures overlap in mutations among pairs of individuals by 
+population. Considering two people, if both people have a mutation in a given 
+variant then they are considered to have an overlap. Individuals are paired 
+randomly without replacement, giving N/2 pairs, with N being the total number
+of individuals. This analysis is run 100 times (hard coded in for now) to 
+reduce any signal from accidental pairings between family members.
+
+These results are then plotted as a histogram of the number of pairs (y-axis) 
+with a given overlap (x-axis) in files named:
+pair_distribution_cC_s0.05_POP.png
+with C being the chromosome, sX.XX being the max sift score, and POP the 
+population. The pairings are also output as text files named
+individual_pairs_overlap_chrC_s0.05_POP.txt
+with each line being N/2 numbers long, where each number is the overlaps in
+that pair. There are 100 lines in the file - one for each run. 
+
+The second analysis portion finds the number of individuals that have mutations
+on a given pair of genes. This information is output in files named:
+gene_pairs_count_chrC_s0.05_POP.txt
+and are in the format of 
+('gene1', 'gene2')	n
+with gene1 and gene2 being the two genes in the pair and n being the number of
+individuals that have mutations on both genes. This data can be used in 
+conjunction with network data which weights each pair
+(e.g. http://cagt10.bu.edu/blinghu/manuscript/Additional_File_1.txt.zip)
+
+
+_________________________
+Directory Structure
+---
+The github repository is downloaded as 
+
+			Mutation Sets/
+				  |
+		__________|__________
+		|                   |
+	  code/				populations/
+	  
+After running the scripts, the directory structure looks like this:
+
+								Mutation Sets/
+										|
+________________________________________|________________________________________
+|         			  |					|					 |					 |
+code/				populations/	  output/				data/				plots/
+|         			  |					|					 |					 |
+scripts				1kg_POP.txt		individual_pairs_*		 |		pair_distribution_*
+described							gene_pairs_*			 |					
+above														 |
+											_________________|________________
+										    |								  |
+											|								  |
+										dataset/						   Fdataset/
+										(e.g. 20130502)					(e.g. F20130502)
+											|								|
+									________|________				sifted.SIFT.chrC.txt
+									|				|				(output from sifting.bash)
+									chrCp/		chrCn/
+									 |				|
+						(folder	for 			chrC.HG*
+						temporary output of		chrC.NA*
+						individuals.bash)		(output from individuals.bash)
+
