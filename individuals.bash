@@ -70,8 +70,7 @@ do
 	start=$(($j*$step + 10))
 	finish=$(((($j + 1))*$step + 9))
 	echo 'reading individuals '$start'-'$finish' from '$unzipped
-	time grep -ve "#" $unzipped |\
-	 awk -v c=$c -v start=$start -v finish=$finish -v dir=$dir '{for(i=start;i<=finish;i++) {name=dir"chr"c"p/chr"c".p"i-9;print $i> name}}'
+	time grep -ve "#" $unzipped | awk -v c=$c -v start=$start -v finish=$finish -v dir=$dir '{for(i=start;i<=finish;i++) {name=dir"chr"c"p/chr"c".p"i-9;print $i> name}}'
 done
 echo 'reading individuals 2510 - 2513 from '$unzipped
 time grep -ve "#" $unzipped | awk -v c=$c -v dir=$dir '{for(i=2510;i<=2513;i++) {name=dir"chr"c"p/chr"c".p"i-9;print $i> name}}'
