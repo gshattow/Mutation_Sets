@@ -45,10 +45,31 @@ population, with ALL including all of them.
 
 
 _________________________
+To run:
+---
+Step 0:
+Download repository, cd into code directory
+
+Step 1:
+./individuals.bash -c C
+or
+./run_individuals.sh
+
+Step 2:
+./sifting.bash
+
+Step 3:
+python mutation_sets.py -c C -pop POP or ./run_mutation_sets.sh
+
+Step 4: 
+Cure cancer
+
+
+_________________________
 individuals.bash
 ---
 To use:
-./individuals.bash -c N (each chromosome individually)
+./individuals.bash -c C (each chromosome individually)
 
 or
 
@@ -126,7 +147,7 @@ python mutation_sets.py -c C -pop POP
 
 or
 
-run_mutation_sets.sh
+./run_mutation_sets.sh
 ---
 This script is the analysis/plotting part of this package. There are two 
 sections after the individual files and variant sift scores are read in. 
@@ -195,4 +216,6 @@ above														 |
 						(folder	for 			chrC.HG*
 						temporary output of		chrC.NA*
 						individuals.bash)		(output from individuals.bash)
+						
+(best viewed with a screen > 95 characters wide)
 
