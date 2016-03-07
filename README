@@ -181,6 +181,17 @@ conjunction with network data which weights each pair
 (e.g. http://cagt10.bu.edu/blinghu/manuscript/Additional_File_1.txt.zip)
 
 
+
+_________________________
+network.py
+---
+Fun code creating a d3js visualisation of co-mutated genes. It's not fully 
+developed, just something I threw together. It uses the gene_pairs*.txt files
+and one (EUR) is hard-coded in. The figure opens in a browser and allows the 
+user to mouse over the heatmap with the values and gene pair appearing over 
+each square.
+
+
 _________________________
 Directory Structure
 ---
